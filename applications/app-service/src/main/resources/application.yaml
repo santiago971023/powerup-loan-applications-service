@@ -1,14 +1,39 @@
 ##Spring Configuration
 server:
-  port: 8080
+  port: 8081
 spring:
   application:
     name: loan-applications-service
-  devtools:
-    add-properties: false
-  h2:
-    console:
+
+data:
+  r2dbc:
+    repositories:
       enabled: true
-      path: /h2
-  profiles:
-    include:
+
+adapters:
+  r2dbc:
+    host: "localhost"
+    port: 5432
+    database: "crediya_loans_db"
+    schema: "public"
+    username: "root"
+    password: "root"
+
+cors:
+  allowed-origins: "*"
+
+springdoc:
+  packages-to-scan: co.com.powerup.api
+  paths-to-match: /api/v1/**
+  webflux:
+    core:
+      fn:
+        enabled: true
+  api-docs:
+    enabled: true
+  show-actuator: true
+
+logging:
+  level:
+    org.springframework.r2dbc.connection: DEBUG
+    io.r2dbc.postgresql: DEBUG

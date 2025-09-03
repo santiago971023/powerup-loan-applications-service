@@ -1,0 +1,20 @@
+package co.com.pragma.r2dbc;
+
+import co.com.pragma.model.loanapplication.LoanApplication;
+import co.com.pragma.model.loanapplication.gateways.LoanApplicationRepository;
+import co.com.pragma.r2dbc.helper.LoanApplicationEntity;
+import co.com.pragma.r2dbc.helper.ReactiveAdapterOperations;
+import org.reactivecommons.utils.ObjectMapper;
+import org.springframework.stereotype.Repository;
+
+import java.util.function.Function;
+
+@Repository
+public class LoanApplicationR2dbcRepositoryAdapter extends ReactiveAdapterOperations<
+        LoanApplication, LoanApplicationEntity, Long, LoanApplicationR2dbcRepository>
+        implements LoanApplicationRepository {
+
+    protected LoanApplicationR2dbcRepositoryAdapter(LoanApplicationR2dbcRepository repository, ObjectMapper mapper) {
+        super(repository, mapper, loanApplicationEntity -> mapper.map(loanApplicationEntity, LoanApplication.class));
+    }
+}
