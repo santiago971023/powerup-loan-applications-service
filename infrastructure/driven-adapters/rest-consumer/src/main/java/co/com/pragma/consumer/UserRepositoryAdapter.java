@@ -1,45 +1,34 @@
 package co.com.pragma.consumer;
 
+import co.com.pragma.model.user.User;
+import co.com.pragma.model.user.gateways.UserRepository;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 @Service
-@RequiredArgsConstructor
-public class UserRepositoryAdapter /* implements Gateway from domain */{
+public class UserRepositoryAdapter implements UserRepository {
+
     private final WebClient client;
 
-
-    // these methods are an example that illustrates the implementation of WebClient.
-    // You should use the methods that you implement from the Gateway from the domain.
-    @CircuitBreaker(name = "testGet" /*, fallbackMethod = "testGetOk"*/)
-    public Mono<UserResponseDto> testGet() {
-        return client
-                .get()
-                .retrieve()
-                .bodyToMono(UserResponseDto.class);
+    public UserRepositoryAdapter(@Qualifier("userServiceWebClient") WebClient client) {
+        this.client = client;
     }
 
-// Possible fallback method
-//    public Mono<String> testGetOk(Exception ignored) {
-//        return client
-//                .get() // TODO: change for another endpoint or destination
-//                .retrieve()
-//                .bodyToMono(String.class);
-//    }
+    @Override
+    public Mono<User> findUserByIdDocument(String idDocument) {
 
-    @CircuitBreaker(name = "testPost")
-    public Mono<UserResponseDto> testPost() {
-        UserRequestDto request = UserRequestDto.builder()
-            .val1("exampleval1")
-            .val2("exampleval2")
-            .build();
-        return client
-                .post()
-                .body(Mono.just(request), UserRequestDto.class)
+        return client.get()
+                .uri("/api/v1/users/document/{idDocument}", idDocument)
                 .retrieve()
-                .bodyToMono(UserResponseDto.class);
+                .onStatus(
+                        httpStatus -> httpStatus.is4xxClientError(),
+                        clientResponse -> Mono.empty()
+                )
+                .bodyToMono(User.class);
     }
 }

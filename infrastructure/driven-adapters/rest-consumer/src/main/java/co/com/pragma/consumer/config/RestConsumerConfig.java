@@ -17,23 +17,24 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 @Configuration
 public class RestConsumerConfig {
 
-    private final String url;
-
     private final int timeout;
 
-    public RestConsumerConfig(@Value("${adapter.restconsumer.url}") String url,
+    private final String userServiceBaseUrl;
+
+    public RestConsumerConfig(@Value("$clients.user-service.base-url") String userServiceBaseUrl,
                               @Value("${adapter.restconsumer.timeout}") int timeout) {
-        this.url = url;
+        this.userServiceBaseUrl = userServiceBaseUrl;
         this.timeout = timeout;
     }
 
-    @Bean
-    public WebClient getWebClient(WebClient.Builder builder) {
+
+    @Bean("userServiceWebClient")
+    public WebClient userServiceWebClient(WebClient.Builder builder) {
         return builder
-            .baseUrl(url)
-            .defaultHeader(HttpHeaders.CONTENT_TYPE, "application/json")
-            .clientConnector(getClientHttpConnector())
-            .build();
+                .baseUrl(userServiceBaseUrl)
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, "application/json")
+                .clientConnector(getClientHttpConnector())
+                .build();
     }
 
     private ClientHttpConnector getClientHttpConnector() {
@@ -49,5 +50,7 @@ public class RestConsumerConfig {
                     connection.addHandlerLast(new WriteTimeoutHandler(timeout, MILLISECONDS));
                 }));
     }
-
+    
 }
+
+

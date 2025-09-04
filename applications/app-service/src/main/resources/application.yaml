@@ -1,15 +1,12 @@
-##Spring Configuration
 server:
   port: 8081
 spring:
   application:
-    name: loan-applications-service
-
+    name: "loan-applications-service"
 data:
   r2dbc:
     repositories:
       enabled: true
-
 adapters:
   r2dbc:
     host: "localhost"
@@ -18,13 +15,11 @@ adapters:
     schema: "public"
     username: "root"
     password: "root"
-
 cors:
-  allowed-origins: "*"
-
+  allowed-origins: "http://localhost:4200,http://localhost:8080"
 springdoc:
-  packages-to-scan: co.com.powerup.api
-  paths-to-match: /api/v1/**
+  packages-to-scan: "co.com.powerup.api"
+  paths-to-match: "/api/v1/**"
   webflux:
     core:
       fn:
@@ -32,8 +27,47 @@ springdoc:
   api-docs:
     enabled: true
   show-actuator: true
-
 logging:
   level:
-    org.springframework.r2dbc.connection: DEBUG
-    io.r2dbc.postgresql: DEBUG
+    org.springframework.r2dbc.connection: "DEBUG"
+    io.r2dbc.postgresql: "DEBUG"
+adapter:
+  restconsumer:
+    timeout: 5000
+    url: "http://localhost:8080"
+management:
+  health:
+    circuitbreakers:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "health,prometheus"
+  endpoint:
+    health:
+      probes:
+        enabled: true
+resilience4j:
+  circuitbreaker:
+    instances:
+      testGet:
+        registerHealthIndicator: true
+        failureRateThreshold: 50
+        slowCallRateThreshold: 50
+        slowCallDurationThreshold: "2s"
+        permittedNumberOfCallsInHalfOpenState: 3
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 10
+        waitDurationInOpenState: "10s"
+      testPost:
+        registerHealthIndicator: true
+        failureRateThreshold: 50
+        slowCallRateThreshold: 50
+        slowCallDurationThreshold: "2s"
+        permittedNumberOfCallsInHalfOpenState: 3
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 10
+        waitDurationInOpenState: "10s"
+clients:
+  user-service:
+    base-url: "http://localhost:8080"
