@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 public class LoanProduct {
 
     private Long id;
-    private Long name;
+    private String name;
     private BigDecimal minAmount;
     private BigDecimal maxAmount;
     private Integer minTermInMonths;

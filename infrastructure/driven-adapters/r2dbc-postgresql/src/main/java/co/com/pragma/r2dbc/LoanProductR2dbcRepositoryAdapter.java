@@ -7,7 +7,6 @@ import co.com.pragma.r2dbc.helper.ReactiveAdapterOperations;
 import org.reactivecommons.utils.ObjectMapper;
 import org.springframework.stereotype.Repository;
 
-import java.util.function.Function;
 
 @Repository
 public class LoanProductR2dbcRepositoryAdapter extends ReactiveAdapterOperations<

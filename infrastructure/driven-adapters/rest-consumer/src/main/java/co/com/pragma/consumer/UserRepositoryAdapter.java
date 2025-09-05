@@ -1,5 +1,6 @@
 package co.com.pragma.consumer;
 
+import co.com.pragma.model.exception.UserNotFoundException;
 import co.com.pragma.model.user.User;
 import co.com.pragma.model.user.gateways.UserRepository;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
@@ -27,8 +28,9 @@ public class UserRepositoryAdapter implements UserRepository {
                 .retrieve()
                 .onStatus(
                         httpStatus -> httpStatus.is4xxClientError(),
-                        clientResponse -> Mono.empty()
+                        clientResponse -> Mono.error(new UserNotFoundException("Usuario no encontrado"))
                 )
-                .bodyToMono(User.class);
+                .bodyToMono(User.class)
+                .onErrorResume(UserNotFoundException.class, e -> Mono.empty());
     }
 }

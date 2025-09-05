@@ -21,7 +21,7 @@ public class RestConsumerConfig {
 
     private final String userServiceBaseUrl;
 
-    public RestConsumerConfig(@Value("$clients.user-service.base-url") String userServiceBaseUrl,
+    public RestConsumerConfig(@Value("${clients.user-service.base-url}") String userServiceBaseUrl,
                               @Value("${adapter.restconsumer.timeout}") int timeout) {
         this.userServiceBaseUrl = userServiceBaseUrl;
         this.timeout = timeout;

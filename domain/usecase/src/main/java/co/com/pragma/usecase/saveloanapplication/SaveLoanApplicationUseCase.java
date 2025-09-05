@@ -7,6 +7,9 @@ import co.com.pragma.model.loanapplication.LoanApplication;
 import co.com.pragma.model.loanapplication.gateways.LoanApplicationRepository;
 import co.com.pragma.model.loanproduct.gateways.LoanProductRepository;
 import co.com.pragma.model.user.gateways.UserRepository;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 import reactor.core.publisher.Mono;
@@ -24,10 +27,13 @@ public class SaveLoanApplicationUseCase {
     private final UserRepository userRepository;
     private final LoanProductRepository loanProductRepository;
 
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class Input {
         private String idDocument;
         private Long loanProductId;
-        private BigDecimal amount;
+        private BigDecimal loanAmount;
         private Integer termInMonths;
     }
 
@@ -41,7 +47,7 @@ public class SaveLoanApplicationUseCase {
                                 .flatMap(loanProduct -> {
                                     LOGGER.info("Creando mi solicitud de crédito para el documento: " + input.idDocument);
                                     LoanApplication loanApp = new LoanApplication();
-                                    loanApp.setLoanAmount(input.amount);
+                                    loanApp.setLoanAmount(input.loanAmount);
                                     loanApp.setTermInMonths(input.termInMonths);
                                     loanApp.setLoanProductId(input.loanProductId);
                                     loanApp.setUserId(user.getId());

@@ -5,19 +5,21 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+@Data
 public class LoanApplicationRequestDto {
 
     @NotBlank(message = "El campo 'documento de identidad' no puede ser vacío o nulo.")
     private String idDocument;
 
-    @NotBlank(message = "El campo 'id del tipo de préstamo' no puede ser vacío o nulo.")
+    @NotNull(message = "El campo 'id del tipo de préstamo' no puede ser vacío o nulo.")
     private Long loanProductId;
 
-    @NotBlank(message = "El campo 'monto' no puede ser vacío o nulo.")
+    @NotNull(message = "El campo 'monto' no puede ser vacío o nulo.")
     @DecimalMin(value = "1.0", message = "El monto solicitado debe ser mayor que cero.")
     private BigDecimal loanAmount;
 
