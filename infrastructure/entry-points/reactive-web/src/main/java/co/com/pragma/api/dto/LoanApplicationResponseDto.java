@@ -1,5 +1,6 @@
 package co.com.pragma.api.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,11 +21,12 @@ public class LoanApplicationResponseDto {
 
     private Long loanProductId;
 
-    private BigDecimal amount;
+    private BigDecimal loanAmount;
 
     private Integer termInMonths;
 
     private String status;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime creationDate;
 }

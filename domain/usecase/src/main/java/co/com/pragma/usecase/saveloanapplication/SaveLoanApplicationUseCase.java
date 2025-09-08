@@ -13,6 +13,8 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 import reactor.core.publisher.Mono;
+
+import java.time.LocalDateTime;
 import java.util.logging.Logger;
 
 import java.math.BigDecimal;
@@ -51,6 +53,7 @@ public class SaveLoanApplicationUseCase {
                                     loanApp.setTermInMonths(input.termInMonths);
                                     loanApp.setLoanProductId(input.loanProductId);
                                     loanApp.setUserId(user.getId());
+                                    loanApp.setCreationDate(LocalDateTime.now());
                                     loanApp.setStatus(ApplicationStatus.PENDING_REVIEW);
                                     return loanApplicationRepository.save(loanApp);
                                 })
