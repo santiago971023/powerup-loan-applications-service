@@ -11,8 +11,11 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-public class UserResponseDto {
+public class UserClientResponseDto {
 
-    private String state;
+    private Long id;
+    private String name;
+    private String lastname;
+    private String email;
 
 }

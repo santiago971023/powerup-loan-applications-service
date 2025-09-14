@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -13,5 +15,9 @@ import lombok.Setter;
 public class User {
 
     private Long id;
+    private String name;
+    private String lastname;
+    private String email;
+    private BigDecimal salary;
 
 }
