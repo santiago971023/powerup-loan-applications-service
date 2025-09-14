@@ -33,4 +33,24 @@ public class UserRepositoryAdapter implements UserRepository {
                 .bodyToMono(User.class)
                 .onErrorResume(UserNotFoundException.class, e -> Mono.empty());
     }
+
+    @Override
+    public Mono<User> findUserById(Long id) {
+        return client.get()
+                .uri("/api/v1/users/id/{id}", id)
+                .retrieve()
+                .onStatus(
+                        httpStatus -> httpStatus.is4xxClientError(),
+                        clientResponse -> Mono.empty()
+                )
+                .bodyToMono(UserClientResponseDto.class)
+                .map(dto -> {
+                    User user = new User();
+                    user.setId(dto.getId());
+                    user.setName(dto.getName());
+                    user.setLastname(dto.getLastname());
+                    user.setEmail(dto.getEmail());
+                    return user;
+                });
+    }
 }
