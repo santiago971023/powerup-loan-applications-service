@@ -2,9 +2,7 @@ package co.com.pragma.api.config;
 
 import co.com.pragma.api.dto.ErrorDetailDto;
 import co.com.pragma.api.dto.ErrorResponseDto;
-import co.com.pragma.model.exception.BusinessException;
-import co.com.pragma.model.exception.LoanProductNotFoundException;
-import co.com.pragma.model.exception.UserNotFoundException;
+import co.com.pragma.model.exception.*;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.internal.engine.path.PathImpl;
@@ -45,6 +43,8 @@ public class GlobalExceptionHandler extends AbstractErrorWebExceptionHandler {
                 ConstraintViolationException.class, this::handleValidationException,
                 UserNotFoundException.class, this::handleUserNotFound,
                 LoanProductNotFoundException.class, this::handleLoanProductNotFound,
+                LoanApplicationNotFoundException.class, this::handleLoanAppNotFound,
+                InvalidNewStatusException.class, this::handleInvalidNewStatus,
                 BusinessException.class, this::handleGenericError
         );
         this.setMessageWriters(configurer.getWriters());
@@ -118,6 +118,43 @@ public class GlobalExceptionHandler extends AbstractErrorWebExceptionHandler {
 
         return ServerResponse.status(status).bodyValue(finalResponse);
     }
+
+    private Mono<ServerResponse> handleLoanAppNotFound(Throwable error, ServerRequest request) {
+
+        HttpStatus status = HttpStatus.NOT_FOUND;
+        String message = "No fue posible encontrar una solicitud con el ID indicado.";
+        String errorCode = "404_03";
+        List<ErrorDetailDto> errorDetails = List.of(new ErrorDetailDto("LoanAppId", error.getMessage()));
+
+        log.warn("Solicitud de préstamo no encontrada. {}: {}", request.path(), error.getMessage());
+
+        ErrorResponseDto finalResponse = ErrorResponseDto.builder()
+                .errors(errorDetails)
+                .message(message)
+                .code(errorCode)
+                .build();
+
+        return ServerResponse.status(status).bodyValue(finalResponse);
+    }
+
+    private Mono<ServerResponse> handleInvalidNewStatus(Throwable error, ServerRequest request) {
+
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        String message = "El estado que indica no es válido.";
+        String errorCode = "400_01";
+        List<ErrorDetailDto> errorDetails = List.of(new ErrorDetailDto("status", error.getMessage()));
+
+        log.warn("Estado indicado no es válido. {}: {}", request.path(), error.getMessage());
+
+        ErrorResponseDto finalResponse = ErrorResponseDto.builder()
+                .errors(errorDetails)
+                .message(message)
+                .code(errorCode)
+                .build();
+
+        return ServerResponse.status(status).bodyValue(finalResponse);
+    }
+
 
     private Mono<ServerResponse> handleLoanProductNotFound(Throwable error, ServerRequest request) {
 
