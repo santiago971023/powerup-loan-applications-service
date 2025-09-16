@@ -3,9 +3,11 @@ package co.com.pragma.api;
 import co.com.pragma.api.dto.LoanApplicationDetailResponseDto;
 import co.com.pragma.api.dto.LoanApplicationRequestDto;
 import co.com.pragma.api.dto.LoanApplicationResponseDto;
+import co.com.pragma.api.dto.UpdateLoanAppStatusDto;
 import co.com.pragma.api.mappers.LoanApplicationDtoMapper;
 import co.com.pragma.model.LoanApplicationDetail;
-import co.com.pragma.model.loanapplication.ApplicationStatus;import co.com.pragma.model.pageable.DomainPageable;
+import co.com.pragma.model.loanapplication.ApplicationStatus;
+import co.com.pragma.model.pageable.DomainPageable;
 import co.com.pragma.usecase.saveloanapplication.*;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -32,6 +34,7 @@ public class LoanApplicationHandler {
 
     private final SaveLoanApplicationUseCase saveLoanApplicationUseCase;
     private final ListApplicationsUseCase listApplicationsUseCase;
+    private final UpdateApplicationStatusUseCase updateApplicationStatusUseCase;
     private final LoanApplicationDtoMapper loanApplicationMapper;
     private final Validator validator;
 
@@ -64,7 +67,7 @@ public class LoanApplicationHandler {
 
         List<String> statusesStr = serverRequest.queryParam("status")
                 .map(s -> Arrays.asList(s.split(",")))
-                .orElse(List.of("PENDING_REVIEW", "REJECTED", "MANUAL_REVIEW"));
+                .orElse(List.of("PENDING_REVIEW", "REJECTED", "MANUAL_REVIEW", "APPROVED"));
 
         List<ApplicationStatus> statuses = statusesStr.stream()
                 .map(String::toUpperCase)
@@ -82,6 +85,19 @@ public class LoanApplicationHandler {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(responseDtoFlux, LoanApplicationDetailResponseDto.class);
     }
+
+    public Mono<ServerResponse> updateLoanApplicationStatus(ServerRequest serverRequest) {
+        Long loanAppId = Long.valueOf(serverRequest.pathVariable("loanAppId"));
+
+        log.info("==> Petición recibida para modificar estado de solicitud. <==");
+
+        return serverRequest.bodyToMono(UpdateLoanAppStatusDto.class)
+                .flatMap(dto -> updateApplicationStatusUseCase.updateApplicationStatus(dto.getStatus(), loanAppId))
+                .flatMap(updated -> ServerResponse.ok().bodyValue(updated));
+    }
+
+
+
 
 
     // Metodo privados  CLASE APARTE
