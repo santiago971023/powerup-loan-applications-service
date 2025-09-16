@@ -18,4 +18,6 @@ dependencies {
 
 
     implementation "org.springdoc:springdoc-openapi-starter-webflux-ui:2.5.0"
+
+    implementation 'org.springframework.data:spring-data-commons'
 }

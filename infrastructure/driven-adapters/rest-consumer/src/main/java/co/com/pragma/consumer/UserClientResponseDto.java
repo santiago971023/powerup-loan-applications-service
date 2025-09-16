@@ -6,13 +6,19 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-public class UserResponseDto {
+public class UserClientResponseDto {
 
-    private String state;
+    private Long id;
+    private String name;
+    private String lastname;
+    private String email;
+    private BigDecimal userSalary;
 
 }

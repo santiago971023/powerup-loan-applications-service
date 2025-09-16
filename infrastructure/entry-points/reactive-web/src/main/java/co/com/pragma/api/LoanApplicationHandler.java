@@ -1,23 +1,29 @@
 package co.com.pragma.api;
 
+import co.com.pragma.api.dto.LoanApplicationDetailResponseDto;
 import co.com.pragma.api.dto.LoanApplicationRequestDto;
 import co.com.pragma.api.dto.LoanApplicationResponseDto;
 import co.com.pragma.api.mappers.LoanApplicationDtoMapper;
-import co.com.pragma.model.loanapplication.LoanApplication;
-import co.com.pragma.model.loanapplication.gateways.LoanApplicationRepository;
-import co.com.pragma.usecase.saveloanapplication.SaveLoanApplicationUseCase;
+import co.com.pragma.model.LoanApplicationDetail;
+import co.com.pragma.model.loanapplication.ApplicationStatus;import co.com.pragma.model.pageable.DomainPageable;
+import co.com.pragma.usecase.saveloanapplication.*;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -25,6 +31,7 @@ import java.util.Set;
 public class LoanApplicationHandler {
 
     private final SaveLoanApplicationUseCase saveLoanApplicationUseCase;
+    private final ListApplicationsUseCase listApplicationsUseCase;
     private final LoanApplicationDtoMapper loanApplicationMapper;
     private final Validator validator;
 
@@ -45,6 +52,37 @@ public class LoanApplicationHandler {
 
 
     }
+
+    public Mono<ServerResponse> listApplications(ServerRequest serverRequest) {
+        int page = serverRequest.queryParam("page").map(Integer::parseInt).orElse(0);
+        int size = serverRequest.queryParam("size").map(Integer::parseInt).orElse(10);
+
+        DomainPageable domainPageable = DomainPageable.builder()
+                .pageNumber(page)
+                .pageSize(size)
+                .build();
+
+        List<String> statusesStr = serverRequest.queryParam("status")
+                .map(s -> Arrays.asList(s.split(",")))
+                .orElse(List.of("PENDING_REVIEW", "REJECTED", "MANUAL_REVIEW"));
+
+        List<ApplicationStatus> statuses = statusesStr.stream()
+                .map(String::toUpperCase)
+                .map(ApplicationStatus::valueOf)
+                .collect(Collectors.toList());
+
+        log.info("==> Petición recibida para listar solicitudes. Estados: {}, Página: {}", statuses, domainPageable);
+
+        Flux<LoanApplicationDetail> detailFlux = listApplicationsUseCase.listApplicationsByStatus(statuses, domainPageable);
+
+        Flux<LoanApplicationDetailResponseDto> responseDtoFlux = detailFlux
+                .map(loanApplicationMapper::toDetailResponseDto);
+
+        return ServerResponse.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(responseDtoFlux, LoanApplicationDetailResponseDto.class);
+    }
+
 
     // Metodo privados  CLASE APARTE
     private Mono<LoanApplicationRequestDto> validateRequestDto(LoanApplicationRequestDto dto) {
