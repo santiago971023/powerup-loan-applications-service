@@ -20,4 +20,14 @@ public class User {
     private String email;
     private BigDecimal salary;
 
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", lastname='" + lastname + '\'' +
+                ", email='" + email + '\'' +
+                ", salary=" + salary +
+                '}';
+    }
 }
