@@ -17,7 +17,9 @@ public class RouterRest {
                 POST("/api/v1/loan-app").and(accept(MediaType.APPLICATION_JSON)),
                 loanApplicationHandler::saveLoanApplication
         ).andRoute(GET("/api/v1/loan-app").and(accept(MediaType.APPLICATION_JSON)),
-                loanApplicationHandler::listApplications);
+                loanApplicationHandler::listApplications
+        ).andRoute(PATCH("/api/v1/loan-app/{loanAppId}").and(accept(MediaType.APPLICATION_JSON)),
+                loanApplicationHandler::updateLoanApplicationStatus);
 
     }
 }
