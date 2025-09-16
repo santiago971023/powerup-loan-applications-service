@@ -6,11 +6,13 @@ import co.com.pragma.model.user.gateways.UserRepository;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+@Slf4j
 @Service
 public class UserRepositoryAdapter implements UserRepository {
 
@@ -50,7 +52,11 @@ public class UserRepositoryAdapter implements UserRepository {
                     user.setName(dto.getName());
                     user.setLastname(dto.getLastname());
                     user.setEmail(dto.getEmail());
+                    user.setSalary(dto.getUserSalary());
+                    log.info("=== === === === === === === === === === === === ===");
+                    log.info(user.toString());
                     return user;
+
                 });
     }
 }
