@@ -6,7 +6,8 @@ import co.com.pragma.model.exception.LoanApplicationNotFoundException;
 import co.com.pragma.model.loanapplication.ApplicationStatus;
 import co.com.pragma.model.loanapplication.LoanApplication;
 import co.com.pragma.model.loanapplication.gateways.LoanApplicationRepository;
-import co.com.pragma.model.loanapplication.gateways.NotificationGateway;
+import co.com.pragma.model.notification.Notification;
+import co.com.pragma.model.user.gateways.UserRepository;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 
@@ -19,6 +20,8 @@ public class UpdateApplicationStatusUseCase {
 
 
     private final LoanApplicationRepository loanApplicationRepository;
+    private final SendNotificationUseCase sendNotificationUseCase;
+    private final UserRepository userRepository;
 
     public Mono<LoanApplication> updateApplicationStatus(String newStatus, Long loanAppId) {
 
@@ -40,9 +43,23 @@ public class UpdateApplicationStatusUseCase {
                     LOGGER.info("<== Estado válido, y solicitud encontrada, se procede a guardar el nuevo estado. ==>");
                     loanApplication.setStatus(newApplicationStatus);
                     return loanApplicationRepository.save(loanApplication);
+                })
+                .flatMap(updatedApplication -> {
+                    LOGGER.info("<== Solicitud actualizada, procediento a notificar ==>");
+                    return userRepository.findUserById(updatedApplication.getUserId())
+                            .flatMap(user -> {
+                                Notification notification = Notification.builder()
+                                        .userEmail(user.getEmail())
+                                        .userName(user.getName() + " " + user.getLastname())
+                                        .loanAppId(updatedApplication.getId())
+                                        .newStatus(updatedApplication.getStatus().name())
+                                        .loanAmount(updatedApplication.getLoanAmount())
+                                        .build();
+
+                                return sendNotificationUseCase.sendStatusChangeNotification(notification)
+                                        .then(Mono.just(updatedApplication));
+                            });
                 });
-
-
     }
 
 
