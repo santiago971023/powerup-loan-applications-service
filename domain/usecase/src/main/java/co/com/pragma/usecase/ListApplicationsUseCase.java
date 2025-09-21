@@ -1,4 +1,4 @@
-package co.com.pragma.usecase.saveloanapplication;
+package co.com.pragma.usecase;
 
 import co.com.pragma.model.LoanApplicationDetail;
 import co.com.pragma.model.loanapplication.ApplicationStatus;
