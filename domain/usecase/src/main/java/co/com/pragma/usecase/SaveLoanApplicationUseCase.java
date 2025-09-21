@@ -1,4 +1,4 @@
-package co.com.pragma.usecase.saveloanapplication;
+package co.com.pragma.usecase;
 
 import co.com.pragma.model.exception.LoanProductNotFoundException;
 import co.com.pragma.model.exception.UserNotFoundException;
