@@ -21,4 +21,5 @@ public class LoanProduct {
     private Integer minTermInMonths;
     private Integer maxTermInMonths;
     private BigDecimal interestRate;
+    private boolean automaticValidation;
 }
