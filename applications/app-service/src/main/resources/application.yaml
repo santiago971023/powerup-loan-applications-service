@@ -3,6 +3,13 @@ server:
 spring:
   application:
     name: "loan-applications-service"
+  cloud:
+    aws:
+      region:
+        static: us-east-2
+      credentials:
+        access-key: ${AWS_ACCESS_KEY_ID}
+        secret-key: ${AWS_SECRET_ACCESS_KEY}
 data:
   r2dbc:
     repositories:
@@ -37,7 +44,9 @@ adapter:
     url: "http://localhost:8080"
   sqs:
     region: "us-east-2"
-    queueUrl: "https://sqs.us-east-2.amazonaws.com/225989345826/loan-application-status-notifications"
+    queues:
+      notification: "https://sqs.us-east-2.amazonaws.com/225989345826/loan-application-status-notifications"
+      calculate-capacity: "https://sqs.us-east-2.amazonaws.com/225989345826/loan-application-calculate-capacity"
 management:
   health:
     circuitbreakers:
@@ -74,12 +83,4 @@ resilience4j:
 clients:
   user-service:
     base-url: "http://localhost:8080"
-aws:
-  region:
-    static: "us-east-1"
-  sqs:
-    endpoint: "https://sqs.us-east-1.amazonaws.com/123456789012/loan-applications-queue"
-    queue-name: "NotificacionesCrediYaQueue"
-  credentials:
-    access-key: "${AWS_ACCESS_KEY_ID}"
-    secret-key: "${AWS_SECRET_ACCESS_KEY}"
+
