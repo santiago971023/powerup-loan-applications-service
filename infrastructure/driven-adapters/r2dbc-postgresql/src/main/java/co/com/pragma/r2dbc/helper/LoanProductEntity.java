@@ -32,4 +32,7 @@ public class LoanProductEntity {
     @Column("interest_rate")
     private BigDecimal interestRate;
 
+    @Column("automatic_validation")
+    private boolean automaticValidation;
+
 }
