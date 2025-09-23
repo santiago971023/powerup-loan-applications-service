@@ -30,7 +30,7 @@ public class NotificationGatewayAdapter implements NotificationGateway {
 
     private SendMessageRequest buildRequest(String message) {
         return SendMessageRequest.builder()
-                .queueUrl(properties.queueUrl())
+                .queueUrl(properties.queues().get("notification"))
                 .messageBody(message)
                 .build();
     }
@@ -44,7 +44,7 @@ public class NotificationGatewayAdapter implements NotificationGateway {
         })
                 .flatMap(messageBody -> {
                     SendMessageRequest request = SendMessageRequest.builder()
-                            .queueUrl(properties.queueUrl())
+                            .queueUrl(properties.queues().get("notification"))
                             .messageBody(messageBody)
                             .build();
 
