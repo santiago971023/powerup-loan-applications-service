@@ -1,7 +1,6 @@
 package co.com.pragma.sqs.sender.config;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProviderChain;
@@ -19,13 +18,12 @@ import java.net.URI;
 
 @Configuration
 @ConditionalOnMissingBean(SqsAsyncClient.class)
-@EnableConfigurationProperties(SQSSenderProperties.class)
 public class SQSSenderConfig {
 
     @Bean
     public SqsAsyncClient configSqs(SQSSenderProperties properties, MetricPublisher publisher) {
         return SqsAsyncClient.builder()
-                .endpointOverride(resolveEndpoint(properties))
+                //.endpointOverride(resolveEndpoint(properties))
                 .region(Region.of(properties.region()))
                 .overrideConfiguration(o -> o.addMetricPublisher(publisher))
                 .credentialsProvider(getProviderChain())
@@ -43,10 +41,10 @@ public class SQSSenderConfig {
                 .build();
     }
 
-    private URI resolveEndpoint(SQSSenderProperties properties) {
-        if (properties.endpoint() != null) {
-            return URI.create(properties.endpoint());
-        }
-        return null;
-    }
+//    private URI resolveEndpoint(SQSSenderProperties properties) {
+//        if (properties.endpoint() != null) {
+//            return URI.create(properties.endpoint());
+//        }
+//        return null;
+//    }
 }
