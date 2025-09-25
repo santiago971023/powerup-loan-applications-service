@@ -3,7 +3,7 @@ package co.com.pragma.sqs.sender;
 import co.com.pragma.model.notification.Notification;
 import co.com.pragma.model.notification.gateways.NotificationGateway;
 import co.com.pragma.sqs.sender.config.SQSSenderProperties;
-import org.reactivecommons.utils.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -40,13 +40,16 @@ public class NotificationGatewayAdapter implements NotificationGateway {
         log.info("<== Enviando notificación para la solicitud ID: {}", notification.getLoanAppId());
 
         return Mono.fromCallable( () -> {
-            return mapper.map(notification, String.class);
-        })
-                .flatMap(messageBody -> {
-                    SendMessageRequest request = SendMessageRequest.builder()
-                            .queueUrl(properties.queues().get("notification"))
-                            .messageBody(messageBody)
-                            .build();
+            try {
+                return mapper.writeValueAsString(notification);
+            } catch (Exception e) {
+                throw new RuntimeException("Error serializando Notification", e);
+            }
+        }).flatMap(messageBody -> {
+            SendMessageRequest request = SendMessageRequest.builder()
+                    .queueUrl(properties.queues().get("notification"))
+                    .messageBody(messageBody)
+                    .build();
 
                     return Mono.fromFuture(client.sendMessage(request))
                             .doOnSuccess(response -> log.info("Mensaje de notificación enviado con éxito {}", response.messageId()))
