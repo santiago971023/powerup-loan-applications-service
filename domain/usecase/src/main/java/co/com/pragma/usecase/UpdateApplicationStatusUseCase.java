@@ -55,7 +55,7 @@ public class UpdateApplicationStatusUseCase {
                                         .newStatus(updatedApplication.getStatus().name())
                                         .loanAmount(updatedApplication.getLoanAmount())
                                         .build();
-
+                                LOGGER.info( "<== === === Se procede a notificar === === ==>");
                                 return sendNotificationUseCase.sendStatusChangeNotification(notification)
                                         .then(Mono.just(updatedApplication));
                             });
