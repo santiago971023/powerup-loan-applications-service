@@ -4,15 +4,8 @@ dependencies {
     implementation 'org.apache.logging.log4j:log4j-api'
     implementation 'software.amazon.awssdk:sqs'
 
-    implementation 'org.reactivecommons.utils:object-mapper-api:0.1.0'
-
-    testImplementation 'org.reactivecommons.utils:object-mapper:0.1.0'
-
-    implementation "org.mapstruct:mapstruct:1.5.5.Final" // Recomiendo esta versión estable
-
-
 
     implementation 'com.fasterxml.jackson.core:jackson-databind'
-    implementation 'com.fasterxml.jackson.core:jackson-core'
     implementation 'com.fasterxml.jackson.core:jackson-annotations'
+    implementation 'com.fasterxml.jackson.core:jackson-core'
 }
