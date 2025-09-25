@@ -47,6 +47,14 @@ adapter:
     queues:
       notification: "https://sqs.us-east-2.amazonaws.com/225989345826/loan-application-status-notifications"
       calculate-capacity: "https://sqs.us-east-2.amazonaws.com/225989345826/loan-application-calculate-capacity"
+entrypoint:
+  sqs:
+    region: "us-east-2"
+    queueUrl: "https://sqs.us-east-2.amazonaws.com/225989345826/loan-applications-results-queue"
+    wait-time-seconds: 20
+    visibility-timeout-seconds: 30
+    max-number-of-messages: 10
+    number-of-threads: 2
 management:
   health:
     circuitbreakers:
