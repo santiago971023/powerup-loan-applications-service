@@ -31,6 +31,7 @@ public class SaveLoanApplicationUseCase {
     private final UserRepository userRepository;
     private final LoanProductRepository loanProductRepository;
     private final CalculationRequestGateway calculationRequestGateway;
+    private final UpdateApplicationStatusUseCase updateApplicationStatusUseCase;
 
     @Data
     @AllArgsConstructor
@@ -65,7 +66,7 @@ public class SaveLoanApplicationUseCase {
                                         loanApp.setStatus(ApplicationStatus.PENDING_AUTOMATIC_VALIDATION);
                                         LOGGER.info("Validación automática es = true");
                                     } else{
-                                        LOGGER.info("Validación automática es = true");
+                                        LOGGER.info("Validación automática es = false");
                                         loanApp.setStatus(ApplicationStatus.PENDING_REVIEW);
                                     }
 
@@ -83,6 +84,9 @@ public class SaveLoanApplicationUseCase {
                                                             .build();
 
                                                     return calculationRequestGateway.requestCalculation(data)
+                                                            .then(updateApplicationStatusUseCase.updateApplicationStatus(
+                                                                    savedLoanApp.getStatus().name(),
+                                                                    savedLoanApp.getId()))
                                                             .thenReturn(savedLoanApp);
                                                 }
                                                 return Mono.just(savedLoanApp);
